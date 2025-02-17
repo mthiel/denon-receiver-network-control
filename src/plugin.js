@@ -1,5 +1,6 @@
 import streamDeck, { LogLevel } from "@elgato/streamdeck";
 /** @typedef {import("@elgato/streamdeck").Logger} Logger */
+/** @typedef {import("@elgato/streamdeck").SystemDidWakeUpEvent} SystemDidWakeUpEvent */
 
 const logger = streamDeck.logger.createScope("Plugin");
 // logger.setLevel(LogLevel.TRACE);
@@ -44,3 +45,12 @@ if (Object.keys(AVRTracker.getReceivers()).length === 0) {
     AVRTracker.searchForReceivers(1, 1)
         .then(() => AVRTracker.searchForReceivers(3, 3));
 }
+
+// When the system wakes up, we need to re-connect to receivers
+streamDeck.system.onSystemDidWakeUp(() => {
+    logger.info("System woke up, refreshing connections.");
+    Object.values(plugin.avrConnections).forEach(connection => {
+        connection.disconnect();
+        connection.connect();
+    });
+});

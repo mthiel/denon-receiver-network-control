@@ -327,6 +327,11 @@ export class PluginAction extends SingletonAction {
 	 */
 	onReceiverDisconnected(ev) {
 		this.updateStatusMessage(ev.connection.status.statusMsg);
+
+		// If the receiver is disconnected, show an alert on the actions that are associated with it
+		ev.actions?.forEach((action) => {
+			action.showAlert();
+		});
 	}
 
 	/**
